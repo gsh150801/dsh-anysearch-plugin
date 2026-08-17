@@ -1,0 +1,21 @@
+{
+  "id": "web-search-anysearch",
+  "name": "dsh-anysearch-plugin",
+  "package": "@deepseek-ai/dsh-web-search-anysearch",
+  "version": "0.1.0",
+  "type": "cordis",
+  "entry": "index",
+  "platform": "host",
+  "description": "An Anysearch-backed WebSearchProvider and a set of per-domain model tools for the DeepSeek Harness web capability seam (ctx.web). Enables searching any of the 17 Anysearch vertical tag families (finance, security, legal, academic, ...) plus the general tagless search, tag discovery, and parallel batch search.",
+  "requires": ["ctx.web", "ctx.tools"],
+  "tools": ["anysearch_<domain>", "anysearch_domains", "anysearch_batch"],
+  "config": {
+    "apiKeyEnv": "ANYSEARCH_API_KEY",
+    "baseURL": "https://api.anysearch.com",
+    "maxResults": null,
+    "enableProvider": true,
+    "enabledDomains": ["general", "resource", "social_media", "finance", "academic", "legal", "health", "business", "security", "ip", "code", "energy", "environment", "agriculture", "travel", "film", "gaming"]
+  },
+  "install": "Add a row to your harness composition (cordis.yml): - id: web-search-anysearch / name: '@deepseek-ai/dsh-web-search-anysearch'. See README.md.",
+  "docs": "./README.md"
+}
