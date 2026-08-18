@@ -96,6 +96,8 @@ npm test             # vitest
 
 Environment fallbacks: `$ANYSEARCH_API_KEY` and `$ANYSEARCH_BASE_URL`.
 
+To obtain an API key, apply from the [Anysearch console → API Keys](https://www.anysearch.com/console/api-keys).
+
 ### Web UI settings card
 
 The plugin also ships a settings card inside the DeepSeek Harness Web UI, so you can

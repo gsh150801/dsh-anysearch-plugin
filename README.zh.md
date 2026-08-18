@@ -96,6 +96,8 @@ npm test             # vitest
 
 环境变量回退：`$ANYSEARCH_API_KEY` 和 `$ANYSEARCH_BASE_URL`。
 
+如需申请 API Key，请前往 [Anysearch 控制台 → API Keys](https://www.anysearch.com/console/api-keys)。
+
 ### Web UI 设置卡片
 
 该插件还在 DeepSeek Harness Web UI 中提供一张「设置卡片」，无需编辑组合文件即可配置并启用
