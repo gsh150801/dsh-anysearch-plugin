@@ -1,10 +1,16 @@
 # dsh-anysearch-plugin
 
-[![CI](https://github.com/gsh150801/dsh-anysearch-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/gsh150801/dsh-anysearch-plugin/actions/workflows/ci.yml)
+[![CI](https://github.com/gsh150801/dsh-anysearch-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/gsh150801/dsh-anysearch-plugin/actions/workflows/ci.yml) · [![dsh-plugin](https://img.shields.io/badge/dsh--plugin-DeepSeek%20Harness-2766c0)](https://github.com/topics/dsh-plugin)
+
+> **Read this in:** [English](README.md) · [简体中文](README.zh.md)
+
+This repository is a **DeepSeek Harness plugin** (`dsh-plugin`). For discoverability, add
+the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to your plugin repository
+(see the [DeepSeek Harness docs](https://github.com/deepseek-ai/deepseek-harness)).
 
 An **[Anysearch](https://anysearch.com)-backed** search plugin for the
 [**DeepSeek Harness**](https://github.com/deepseek-ai/deepseek-harness) web capability
-seam (`ctx.web`). It is a self-contained **Cordis plugin** (a `dsk-plugin`): it can be
+seam (`ctx.web`). It is a self-contained **Cordis plugin**: it can be
 installed as an external npm package into any DSH composition.
 
 It offers three things over the same Anysearch JSON-RPC endpoint:
@@ -67,7 +73,6 @@ domain needs.
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `apiKey` | string (secret) | — | Literal key; prefer `apiKeyEnv`. |
 | `apiKeyEnv` | string (credential-ref) | `ANYSEARCH_API_KEY` | Credential reference resolved per call. |
 | `baseURL` | string | `https://api.anysearch.com` | `/mcp` is appended. |
 | `maxResults` | int | — | Seam provider default result count. |
