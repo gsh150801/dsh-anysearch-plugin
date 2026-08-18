@@ -123,7 +123,6 @@ export class AnysearchCardController {
    */
   private projection(): AnysearchCardState {
     const snapshot = this.scope.getSnapshot()
-    const user = snapshot.user as Record<string, unknown> | undefined
     return {
       ...this.form.shell(),
       apiKeyEnv: this.form.field('apiKeyEnv'),
@@ -131,7 +130,7 @@ export class AnysearchCardController {
       maxResults: this.form.field('maxResults'),
       enabledDomains: this.form.field('enabledDomains'),
       apiKey: this.form.field(API_KEY_FIELD),
-      apiKeyConfigured: user !== undefined && Object.hasOwn(user, API_KEY_FIELD),
+      apiKeyConfigured: this.isApiKeyConfigured(),
       apiKeyWritable: snapshot.writable,
     }
   }
@@ -139,13 +138,15 @@ export class AnysearchCardController {
   /**
    * Whether the Host holds an apiKey the user has configured.
    *
-   * The settings provider redacts the secret in any value the card reads, so
-   * the user layer is the source — its presence is the only signal, not its
-   * literal.
+   * The settings provider redacts a `role('secret')` literal from every layer
+   * it serves, so the user layer can never carry the field; its declared
+   * secret slot (`secrets`), copied alongside the redacted view, is the only
+   * signal that survives — presence means the write landed.
    */
   private isApiKeyConfigured(): boolean {
-    const user = this.scope.getSnapshot().user as Record<string, unknown> | undefined
-    return user !== undefined && Object.hasOwn(user, API_KEY_FIELD)
+    const secrets = this.scope.getSnapshot().secrets
+    return secrets !== undefined && secrets.some(slot =>
+      slot.set && slot.path.length === 1 && slot.path[0] === API_KEY_FIELD)
   }
 
   /**

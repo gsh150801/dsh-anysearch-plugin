@@ -18,12 +18,13 @@ copied into the monorepo.
 | `anysearch-card-controller.ts` | Binds the `web-search-anysearch` settings namespace. Stages edits through `CardForm`; the apiKey literal is a `CardSecretSpec` so it is never echoed back on a response. |
 | `tags-field.tsx` | A reusable `TagsField` control (checkbox grid) plus a `tagsField` `CardFieldSpec` factory that round-trips between `string[]` (stored) and a comma-separated draft string (staged). |
 
-## Three edits to existing files
+## Four edits to existing files
 
-The card needs three small changes to existing files. The first two live in
-`packages/client/ui-settings-plugins/src/client/`; the third is in the host
-api-proxy (§3) and is what makes the card actually appear — without it the card is
-registered but renders nothing.
+The card needs four small changes to existing files: two in
+`packages/client/ui-settings-plugins/src/client/`, one in the host api-proxy (§3)
+that makes the card actually appear (without it the card is registered but renders
+nothing), and one that surfaces the secret-configured signal to the card (§4)
+without which a save still reports failure even though the key is stored.
 
 ### 1) `locales.ts` — extend the union and the bundles
 
@@ -129,9 +130,25 @@ const WEB_SETTINGS_NAMESPACES = [
 ] as const
 ```
 
+### 4) surface the secret-configured signal on the client settings scope
+
+The card confirms a save (and shows the "configured" badge) by asking whether the
+`apiKey` secret is set. The Host redacts `role('secret')` literals from every wire
+layer, so the user layer can never carry the field; the redaction record is the
+signal instead. Two small additions in the monorepo make that record reach the card:
+
+- `packages/client/runtime/src/client/contract/settings-scope.ts` — add an optional
+  `secrets` field to `SettingsScopeSnapshot`
+  (`Readonly<Array<{ path: readonly string[]; set: boolean }>>`).
+- `packages/client/ui-settings/src/client/settings-scope.ts` — in `accept()`, copy it
+  onto the published snapshot: `draft.secrets = view.secrets`.
+
+Without this, `isApiKeyConfigured()` reads an always-empty signal and a successful
+save still reports 「本部署没有接受这些值」 even though the key was stored.
+
 ## Activation
 
-After copying the three files and applying the three edits:
+After copying the three files and applying the four edits:
 
 ```sh
 pnpm install
@@ -139,9 +156,10 @@ pnpm run build:lib:client
 pnpm run gen-client-catalog   # regenerates packages/extensions/cordis-client-runner/src/client/slot-catalog.ts
 ```
 
-Restart the web profile (`pnpm dsh web`) so the rebuilt `lib/` — and the newly exposed
-`web-search-anysearch` settings namespace — are loaded. The **Anysearch** card then
-appears under 设置 → 插件 → 插件配置 alongside Bash, Agent loop, and Web search.
+Restart the web profile (`pnpm dsh web`) so the rebuilt `lib/` — the newly exposed
+`web-search-anysearch` settings namespace, and the surfaced secret signal — are
+loaded. The **Anysearch** card then appears under 设置 → 插件 → 插件配置 alongside
+Bash, Agent loop, and Web search, and entering an API key saves and confirms cleanly.
 
 ## Why a separate repository?
 
