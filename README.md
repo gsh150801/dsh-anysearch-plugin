@@ -83,6 +83,40 @@ Environment fallbacks: `$ANYSEARCH_API_KEY` and `$ANYSEARCH_BASE_URL`.
 
 ---
 
+## Web UI settings card
+
+The plugin also ships a settings card inside the DeepSeek Harness Web UI, so you can
+configure and enable Anysearch without editing a composition file.
+
+### Enabling the card
+
+1. Start the DSH Web UI (`pnpm dsh web`) and open **设置 → 插件 → 插件配置**.
+2. Find the **Anysearch 搜索** card in the plugin list (it appears once the
+   `web-search-anysearch` settings namespace is exposed to the client).
+3. Expand the card, fill in the fields below, and click **保存** (Save). A successful
+   save shows a "configured" badge; the stored key is never echoed back on a response.
+
+### Card fields
+
+| Field | Kind | Notes |
+|---|---|---|
+| API Key | secret | The Anysearch credential. Prefer referencing it through `apiKeyEnv`/`ANYSEARCH_API_KEY`; the stored value never appears in responses. |
+| `apiKeyEnv` | text | Credential reference (default `ANYSEARCH_API_KEY`). |
+| `baseURL` | text | Default `https://api.anysearch.com`. |
+| `maxResults` | number | Default result count for the seam provider. |
+| `enabledDomains` | multi-select | The 17 vertical tags; each checked one gets an `anysearch_<domain>` tool. |
+
+### After saving
+
+- Saving applies immediately (live-apply); the card fields themselves need no restart.
+- To use Anysearch as the underlying `web_search` backend, keep `web`'s
+  `searchProvider: anysearch` (see the example below).
+
+> The card is an *additive* client surface over the same config a composition file
+> writes. Prefer one source at a time, or keep both consistent.
+
+---
+
 ## Example (base composition overlay)
 
 ```yaml

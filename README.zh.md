@@ -83,6 +83,40 @@ agent preset）中添加一行：
 
 ---
 
+## Web UI 设置卡片
+
+该插件还在 DeepSeek Harness Web UI 中提供一张「设置卡片」，无需编辑组合文件即可配置并启用
+Anysearch。
+
+### 启用步骤
+
+1. 启动 DSH Web UI（`pnpm dsh web`），打开 **设置 → 插件 → 插件配置**。
+2. 在插件列表中找到 **Anysearch 搜索** 卡片（当 `web-search-anysearch` 设置命名空间暴露给
+   客户端时会出现）。
+3. 展开卡片，填写下面的字段，然后点击 **保存**。保存成功后会显示「已配置」标记；已存储的
+   密钥绝不会在响应中回显。
+
+### 卡片字段
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| API Key | 机密（secret） | Anysearch 凭据。建议通过 `apiKeyEnv` / `ANYSEARCH_API_KEY` 引用；已存值不会出现在响应中。 |
+| `apiKeyEnv` | 文本 | 凭据引用（默认 `ANYSEARCH_API_KEY`）。 |
+| `baseURL` | 文本 | 默认 `https://api.anysearch.com`。 |
+| `maxResults` | 数字 | seam 提供方的默认结果数。 |
+| `enabledDomains` | 多选 | 17 个垂直领域标签；每个勾选的会获得对应的 `anysearch_<domain>` 工具。 |
+
+### 保存之后
+
+- 保存后立即生效（live-apply），卡片字段本身无需重启。
+- 若要用作底层 `web_search` 后端，请保持 `web` 提供方的 `searchProvider: anysearch`
+  （见下方示例）。
+
+> 该卡片是*增量式*客户端界面，与组合文件写入相同的配置。建议同一时间只使用一种来源，
+> 或保持两者一致。
+
+---
+
 ## 示例（基础组合叠加）
 
 ```yaml
