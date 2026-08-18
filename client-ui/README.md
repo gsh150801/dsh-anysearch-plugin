@@ -18,10 +18,12 @@ copied into the monorepo.
 | `anysearch-card-controller.ts` | Binds the `web-search-anysearch` settings namespace. Stages edits through `CardForm`; the apiKey literal is a `CardSecretSpec` so it is never echoed back on a response. |
 | `tags-field.tsx` | A reusable `TagsField` control (checkbox grid) plus a `tagsField` `CardFieldSpec` factory that round-trips between `string[]` (stored) and a comma-separated draft string (staged). |
 
-## Two edits to existing files
+## Three edits to existing files
 
-The card also needs two small changes to existing files in
-`packages/client/ui-settings-plugins/src/client/`.
+The card needs three small changes to existing files. The first two live in
+`packages/client/ui-settings-plugins/src/client/`; the third is in the host
+api-proxy (§3) and is what makes the card actually appear — without it the card is
+registered but renders nothing.
 
 ### 1) `locales.ts` — extend the union and the bundles
 
@@ -108,9 +110,28 @@ yield ctx.slots.register({
 }, AnysearchCard)
 ```
 
+### 3) `packages/host/apiproxy/src/api-proxy.ts` — expose the settings namespace
+
+This step does not live in `ui-settings-plugins`, but the card only renders if it is
+done. The browser half shows a card only when its settings scope is served to the
+client: the api-proxy serves an explicit allowlist of non-model namespaces
+(`WEB_SETTINGS_NAMESPACES`), and a namespace absent from it answers
+`settings-not-exposed`. The scope then reports `available: false` and `PluginCard`
+deliberately renders nothing — so the **Anysearch** card silently never appears, even
+though it is registered.
+
+Add `web-search-anysearch` to that allowlist, alongside `web-search-deepseek`:
+
+```ts
+const WEB_SETTINGS_NAMESPACES = [
+  'agent-loop', 'shell', 'locale', 'permission', 'ui-conversation', 'ui-theme',
+  'web-search-deepseek', 'web-search-anysearch',
+] as const
+```
+
 ## Activation
 
-After copying the three files and applying the two edits:
+After copying the three files and applying the three edits:
 
 ```sh
 pnpm install
@@ -118,9 +139,9 @@ pnpm run build:lib:client
 pnpm run gen-client-catalog   # regenerates packages/extensions/cordis-client-runner/src/client/slot-catalog.ts
 ```
 
-Then restart the web profile (`pnpm dsh web`) so the rebuilt `lib/` is loaded.
-The **Anysearch** card appears under 设置 → 插件 → 插件配置 alongside Bash, Agent
-loop, and Web search.
+Restart the web profile (`pnpm dsh web`) so the rebuilt `lib/` — and the newly exposed
+`web-search-anysearch` settings namespace — are loaded. The **Anysearch** card then
+appears under 设置 → 插件 → 插件配置 alongside Bash, Agent loop, and Web search.
 
 ## Why a separate repository?
 
